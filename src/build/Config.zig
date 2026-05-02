@@ -33,6 +33,7 @@ wayland: bool = false,
 sentry: bool = true,
 simd: bool = true,
 i18n: bool = true,
+fribidi: bool = false,
 wasm_shared: bool = true,
 
 /// Ghostty exe properties
@@ -227,6 +228,12 @@ pub fn init(b: *std.Build, appVersion: []const u8, libVersion: []const u8) !Conf
         .linux, .freebsd => target.result.isGnuLibC(),
         else => false,
     };
+
+    config.fribidi = b.option(
+        bool,
+        "fribidi",
+        "Enables FriBidi-backed bidirectional text support.",
+    ) orelse false;
 
     //---------------------------------------------------------------
     // Ghostty Exe Properties
@@ -548,6 +555,7 @@ pub fn addOptions(self: *const Config, step: *std.Build.Step.Options) !void {
     step.addOption(bool, "sentry", self.sentry);
     step.addOption(bool, "simd", self.simd);
     step.addOption(bool, "i18n", self.i18n);
+    step.addOption(bool, "fribidi", self.fribidi);
     step.addOption(ApprtRuntime, "app_runtime", self.app_runtime);
     step.addOption(FontBackend, "font_backend", self.font_backend);
     step.addOption(RendererBackend, "renderer", self.renderer);
@@ -649,6 +657,7 @@ pub fn fromOptions() Config {
         .wasm_shared = options.wasm_shared,
         .i18n = options.i18n,
         .crash_report_subdir = options.crash_report_subdir,
+        .fribidi = options.fribidi,
     };
 }
 
