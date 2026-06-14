@@ -644,7 +644,7 @@ pub const Shaper = struct {
     pub const RunIteratorHook = struct {
         shaper: *Shaper,
 
-        pub fn prepare(self: *RunIteratorHook) void {
+        pub fn prepare(self: *RunIteratorHook) !void {
             self.shaper.run_state.reset();
             // log.warn("----------- run reset -------------", .{});
         }
@@ -681,7 +681,7 @@ pub const Shaper = struct {
             });
         }
 
-        pub fn finalize(self: RunIteratorHook) void {
+        pub fn finalize(self: RunIteratorHook) !void {
             _ = self;
         }
     };
