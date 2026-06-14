@@ -32,6 +32,23 @@ Verify FriBidi is linked:
 otool -L macos/build/ReleaseLocal/Ghostty.app/Contents/MacOS/*.dylib | grep fribidi
 ```
 
+## Apple Silicon: build arm64-only
+
+`ReleaseLocal`/`Release` build a **universal** (arm64 + x86_64) binary, but
+Homebrew's `libfribidi` on Apple Silicon is **arm64-only**, so the x86_64 slice
+fails to link. Build arm64-only:
+
+```sh
+env -i HOME="$HOME" PATH=/usr/bin:/bin:/usr/sbin:/sbin \
+  xcodebuild -project macos/Ghostty.xcodeproj -scheme Ghostty \
+  -configuration ReleaseLocal SYMROOT="$PWD/macos/build" \
+  ARCHS=arm64 ONLY_ACTIVE_ARCH=YES \
+  'OTHER_LDFLAGS=$(inherited) -L/opt/homebrew/lib -lfribidi' build
+```
+
+(`Debug` is arm64 native by default, so `nu macos/build.nu` works unchanged there.)
+A universal build needs an x86_64 `libfribidi` too (e.g. a universal/`x86_64` brew).
+
 ## Notes
 
 - `-Dfont-backend=coretext_harfbuzz` keeps CoreText for font **discovery**
