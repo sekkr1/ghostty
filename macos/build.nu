@@ -27,6 +27,10 @@ def main [
         -scheme $scheme
         -configuration $configuration
         $"SYMROOT=($build_dir)"
+        # BiDi fork: GhosttyKit.xcframework references FriBidi symbols
+        # (built via `zig build -Dfribidi=true`). FriBidi is a system dylib,
+        # so the final app link must find it. Covers both Homebrew prefixes.
+        'OTHER_LDFLAGS=$(inherited) -L/opt/homebrew/lib -L/usr/local/lib -lfribidi'
         ...$skip_testing
         $action)
 }
